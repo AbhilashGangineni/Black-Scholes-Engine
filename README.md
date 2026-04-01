@@ -86,7 +86,7 @@ Where:
 ---
 
 ## Status
-
+Complete
 ## 📊 Greeks Visualization
 
 ![Greeks Visualization](greeks_visualization.png)
