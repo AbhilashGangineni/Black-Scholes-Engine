@@ -3,7 +3,7 @@
 ![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)
 ![NumPy](https://img.shields.io/badge/NumPy-1.24+-green.svg)
 ![SciPy](https://img.shields.io/badge/SciPy-1.10+-orange.svg)
-![Status](https://img.shields.io/badge/Status-In%20Progress-yellow.svg)
+![Status](https://img.shields.io/badge/Status-Complete-brightgreen.svg)
 
 A Python-based options pricing engine implementing the Black-Scholes model with full Greeks calculation, implied volatility extraction, and Monte Carlo simulation for European options pricing.
 
@@ -23,7 +23,8 @@ This project builds a complete options pricing system from first principles cove
 - Calculate all Greeks analytically: Delta, Gamma, Theta, Vega, Rho
 - Extract implied volatility from market prices using numerical optimization
 - Simulate option prices via Monte Carlo (10,000+ paths)
-- Visualize volatility surface and Greeks sensitivity across strike and maturity
+- Visualize all 5 Greeks across stock price range
+- Write unit tests to validate pricing and Greeks
 
 ---
 
@@ -90,18 +91,14 @@ Where:
 
 ![Greeks Visualization](greeks_visualization.png)
 
-## 🗂️ Project Structure
-```
+## Project Structure
 Black-Scholes-Engine/
-├── black_scholes.py
-├── visualization.py
-├── requirements.txt
-├── greeks_visualization.png
-├── examples/
-│   └── basic_usage.py
-└── tests/
-    └── test_black_scholes.py
-```
+|-- black_scholes.py        # Core BS formula + Greeks
+|-- implied_vol.py          # Implied volatility extraction
+|-- monte_carlo.py          # Monte Carlo pricing simulation
+|-- visualization.py        # Vol surface + Greeks plots
+|-- requirements.txt
+|-- README.md
 
 ## 🚀 How to Run
 ```bash
@@ -114,9 +111,9 @@ python -m pytest tests/
 ---
 
 ## Author
-
 **Abhilash Gangineni**
 MS Finance, University of North Texas (GPA: 3.50)
+- GitHub: github.com/AbhilashGangineni
 - LinkedIn: linkedin.com/in/abhilash-gangineni
   
 ---
