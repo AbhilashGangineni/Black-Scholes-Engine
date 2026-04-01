@@ -7,7 +7,7 @@ Abhilash Gangineni | MS Finance @ UNT
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
-from black_scholes import BlackScholesEngine
+from black_scholes import BlackScholes
 
 # ─────────────────────────────────────────────
 # Parameters
@@ -30,18 +30,17 @@ vegas  = []
 rhos_call, rhos_put = [], []
 
 for S in S_range:
-    bs = BlackScholesEngine(S=S, K=K, T=T, r=r, sigma=sigma)
+    bs = BlackScholes(S=S, K=K, T=T, r=r, sigma=sigma)
     call_prices.append(bs.call_price())
     put_prices.append(bs.put_price())
-    g = bs.greeks()
-    deltas_call.append(g['call']['delta'])
-    deltas_put.append(g['put']['delta'])
-    gammas.append(g['call']['gamma'])
-    thetas_call.append(g['call']['theta'])
-    thetas_put.append(g['put']['theta'])
-    vegas.append(g['call']['vega'])
-    rhos_call.append(g['call']['rho'])
-    rhos_put.append(g['put']['rho'])
+    deltas_call.append(bs.delta('call'))
+    deltas_put.append(bs.delta('put'))
+    gammas.append(bs.gamma())
+    thetas_call.append(bs.theta('call'))
+    thetas_put.append(bs.theta('put'))
+    vegas.append(bs.vega())
+    rhos_call.append(bs.rho('call'))
+    rhos_put.append(bs.rho('put'))
 
 # ─────────────────────────────────────────────
 # Plot
