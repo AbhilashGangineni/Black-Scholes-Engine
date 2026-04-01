@@ -87,8 +87,31 @@ Where:
 
 ## Status
 
-Currently in progress. Code and visualizations being added daily.
+## 📊 Greeks Visualization
 
+![Greeks Visualization](greeks_visualization.png)
+
+## 🗂️ Project Structure
+```
+Black-Scholes-Engine/
+├── black_scholes.py
+├── visualization.py
+├── requirements.txt
+├── greeks_visualization.png
+├── examples/
+│   └── basic_usage.py
+└── tests/
+    └── test_black_scholes.py
+```
+
+## 🚀 How to Run
+```bash
+pip install -r requirements.txt
+python black_scholes.py
+python visualization.py
+python examples/basic_usage.py
+python -m pytest tests/
+```
 ---
 
 ## Author
