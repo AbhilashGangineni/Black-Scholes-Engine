@@ -149,6 +149,7 @@ python examples/basic_usage.py
 ## Visualizations
 
 ### Basic Greeks (visualization.py)
+<img width="2010" height="1441" alt="greeks_visualization" src="https://github.com/user-attachments/assets/5eaf0d24-6db3-4397-b6c4-43a0c395ed9e" />
 
 ```bash
 python visualization.py
@@ -171,12 +172,15 @@ All 5 Greeks plotted from 3 days to 2 years, across three moneyness scenarios:
 - ITM (S=110, K=100)
 
 Includes a near-expiry Delta closeup showing convergence behavior as T → 0.
+<img width="2234" height="1382" alt="greeks_vs_time" src="https://github.com/user-attachments/assets/5eda5b63-3c8c-4096-94a5-2363f87812cb" />
 
 **Chart 2 — Delta Heatmap**
 Contour map of Delta across stock price (S=70 to 130) and time to expiry (0 to 1 year). Contour lines at Delta = 0.25, 0.50, 0.75.
+<img width="1406" height="879" alt="delta_heatmap" src="https://github.com/user-attachments/assets/3715fd97-1df7-4b99-af4d-040ba157581f" />
 
 **Chart 3 — Volatility Sensitivity**
 Option price vs volatility (5% to 80%) across four time horizons: 3 months, 6 months, 1 year, 2 years.
+<img width="1482" height="878" alt="volatility_sensitivity" src="https://github.com/user-attachments/assets/943f4d2e-a2d8-4986-be58-a6a2e6f85ce1" />
 
 > Visualization updated based on feedback from Jonathan Schachter PhD (Wall Street quant, model governance) — treating T as a live parameter and analyzing Greeks across moneyness near expiry.
 
