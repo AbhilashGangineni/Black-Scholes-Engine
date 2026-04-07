@@ -9,12 +9,28 @@ Addresses feedback from Jonathan Schachter PhD:
 - Volatility surface and time decay plots
 """
 
+import sys
+import os
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.gridspec as gridspec
-from black_scholes import black_scholes_price, calculate_greeks
 
-# ── Style ────────────────────────────────────────────────────
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from black_scholes import BlackScholes
+
+
+# ── Wrapper functions ─────────────────────────────────────────
+def black_scholes_price(S, K, T, r, sigma, option_type='call'):
+    bs = BlackScholes(S, K, T, r, sigma)
+    return bs.call_price() if option_type == 'call' else bs.put_price()
+
+
+def calculate_greeks(S, K, T, r, sigma, option_type='call'):
+    bs = BlackScholes(S, K, T, r, sigma)
+    return bs.all_greeks(option_type)
+
+
+# ── Style ─────────────────────────────────────────────────────
 plt.rcParams.update({
     'font.family': 'monospace',
     'axes.spines.top': False,
@@ -24,21 +40,20 @@ plt.rcParams.update({
     'figure.facecolor': 'white',
 })
 
-S = 100.0   # Stock price
-K = 100.0   # Strike price
-r = 0.05    # Risk-free rate
-sigma = 0.20  # Volatility
+S = 100.0
+K = 100.0
+r = 0.05
+sigma = 0.20
 
-# ── FIGURE 1: Greeks vs Time (Jonathan's main point) ─────────
+# ── FIGURE 1: Greeks vs Time ──────────────────────────────────
 print("Generating Figure 1: Greeks vs Time to Expiry...")
 
-T_range = np.linspace(0.01, 2.0, 300)  # 3 days to 2 years
+T_range = np.linspace(0.01, 2.0, 300)
 
-# Three moneyness scenarios
 scenarios = {
-    'OTM  (S=90, K=100)': {'S': 90,  'color': 'black',  'ls': '--'},
-    'ATM  (S=100, K=100)': {'S': 100, 'color': 'black',  'ls': '-'},
-    'ITM  (S=110, K=100)': {'S': 110, 'color': 'black',  'ls': ':'},
+    'OTM  (S=90,  K=100)': {'S': 90,  'color': 'black', 'ls': '--'},
+    'ATM  (S=100, K=100)': {'S': 100, 'color': 'black', 'ls': '-'},
+    'ITM  (S=110, K=100)': {'S': 110, 'color': 'black', 'ls': ':'},
 }
 
 fig1, axes = plt.subplots(2, 3, figsize=(15, 9))
@@ -48,17 +63,17 @@ fig1.suptitle(
     fontsize=14, fontweight='bold', y=1.02
 )
 
-greek_names = ['delta', 'gamma', 'theta', 'vega', 'rho']
+greek_names  = ['Delta', 'Gamma', 'Theta', 'Vega', 'Rho']
 greek_labels = ['Delta', 'Gamma', 'Theta (per day)', 'Vega', 'Rho']
 ax_flat = axes.flatten()
 
 for idx, (greek, label) in enumerate(zip(greek_names, greek_labels)):
     ax = ax_flat[idx]
     for name, params in scenarios.items():
-        values = []
-        for T in T_range:
-            g = calculate_greeks(params['S'], K, T, r, sigma, 'call')
-            values.append(g[greek])
+        values = [
+            calculate_greeks(params['S'], K, T, r, sigma, 'call')[greek]
+            for T in T_range
+        ]
         ax.plot(T_range, values,
                 color=params['color'],
                 linestyle=params['ls'],
@@ -72,12 +87,14 @@ for idx, (greek, label) in enumerate(zip(greek_names, greek_labels)):
     ax.axvline(x=0.25, color='gray', alpha=0.4, linewidth=0.8, linestyle='-.')
     ax.axvline(x=1.0,  color='gray', alpha=0.4, linewidth=0.8, linestyle='-.')
 
-# Use last panel for near-expiry delta closeup (Jonathan's key point)
+# Last panel — near-expiry Delta closeup (Jonathan's key point)
 ax = ax_flat[5]
-T_near = np.linspace(0.001, 0.15, 500)  # 0 to ~55 days
+T_near = np.linspace(0.001, 0.15, 500)
 for name, params in scenarios.items():
-    deltas = [calculate_greeks(params['S'], K, T, r, sigma, 'call')['delta']
-              for T in T_near]
+    deltas = [
+        calculate_greeks(params['S'], K, T, r, sigma, 'call')['Delta']
+        for T in T_near
+    ]
     ax.plot(T_near * 365, deltas,
             color=params['color'],
             linestyle=params['ls'],
@@ -95,15 +112,15 @@ plt.savefig('greeks_vs_time.png', dpi=150, bbox_inches='tight')
 print("Saved: greeks_vs_time.png")
 plt.close()
 
-# ── FIGURE 2: Delta Heatmap (Moneyness x Time) ───────────────
+# ── FIGURE 2: Delta Heatmap ───────────────────────────────────
 print("Generating Figure 2: Delta Heatmap...")
 
-S_range = np.linspace(70, 130, 60)
+S_range  = np.linspace(70, 130, 60)
 T_range2 = np.linspace(0.01, 1.0, 60)
 S_grid, T_grid = np.meshgrid(S_range, T_range2)
 
 delta_grid = np.vectorize(
-    lambda s, t: calculate_greeks(s, K, t, r, sigma, 'call')['delta']
+    lambda s, t: calculate_greeks(s, K, t, r, sigma, 'call')['Delta']
 )(S_grid, T_grid)
 
 fig2, ax = plt.subplots(figsize=(10, 6))
@@ -131,17 +148,17 @@ plt.close()
 print("Generating Figure 3: Volatility Sensitivity...")
 
 sigma_range = np.linspace(0.05, 0.80, 200)
-T_vals = [0.25, 0.5, 1.0, 2.0]
+T_vals      = [0.25, 0.5, 1.0, 2.0]
+linestyles  = ['-', '--', '-.', ':']
 
 fig3, ax = plt.subplots(figsize=(10, 6))
-linestyles = ['-', '--', '-.', ':']
 for T_val, ls in zip(T_vals, linestyles):
     prices = [black_scholes_price(S, K, T_val, r, s, 'call')
               for s in sigma_range]
-    label = f'T = {int(T_val*12)} months'
     ax.plot(sigma_range * 100, prices,
             color='black', linestyle=ls,
-            linewidth=2.0, label=label)
+            linewidth=2.0,
+            label=f'T = {int(T_val * 12)} months')
 
 ax.axvline(x=20, color='gray', alpha=0.5, linewidth=1,
            linestyle='-.', label='sigma=20% (base case)')
@@ -158,10 +175,10 @@ plt.savefig('volatility_sensitivity.png', dpi=150, bbox_inches='tight')
 print("Saved: volatility_sensitivity.png")
 plt.close()
 
-print("\n" + "="*55)
+print("\n" + "=" * 55)
 print("   VISUALIZATION COMPLETE")
 print("   3 charts generated:")
 print("   1. greeks_vs_time.png")
 print("   2. delta_heatmap.png")
 print("   3. volatility_sensitivity.png")
-print("="*55)
+print("=" * 55)
